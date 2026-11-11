@@ -1,0 +1,21 @@
+# build
+bin/
+obj/
+publish/
+dist/
+*.user
+
+# local spikes (research only, not shipped)
+spikes/
+
+# models & local runtime (downloaded, never committed)
+spikes/**/bin/
+spikes/**/obj/
+models/
+runtime/*.dll
+
+# local
+.vs/
+.idea/
+*.log
+PiggyOcr.json
