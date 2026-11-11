@@ -25,4 +25,17 @@ public sealed class ImageBuffer
         Height = height;
         Bgra = bgra;
     }
+
+    public ImageBuffer Crop(int x, int y, int w, int h)
+    {
+        x = Math.Clamp(x, 0, Width - 1);
+        y = Math.Clamp(y, 0, Height - 1);
+        w = Math.Clamp(w, 1, Width - x);
+        h = Math.Clamp(h, 1, Height - y);
+
+        var dst = new ImageBuffer(w, h);
+        for (int row = 0; row < h; row++)
+            Buffer.BlockCopy(Bgra, (y + row) * Stride + x * 4, dst.Bgra, row * dst.Stride, w * 4);
+        return dst;
+    }
 }

@@ -9,6 +9,7 @@ public sealed class OcrEngine : IDisposable
     private readonly InferenceSession _recSession;
     private readonly Detector _detector;
     private readonly Recognizer _recognizer;
+    private readonly OcrOptions _options;
     private readonly object _gate = new();
 
     public ModelFiles Model { get; }
@@ -20,6 +21,7 @@ public sealed class OcrEngine : IDisposable
     {
         Model = model;
         var opts = options ?? new OcrOptions();
+        _options = opts;
 
         if (preferGpu)
         {
@@ -67,7 +69,7 @@ public sealed class OcrEngine : IDisposable
     {
         lock (_gate)
         {
-            var blank = new ImageBuffer(736, 736);
+            var blank = new ImageBuffer(_options.DetCanvasWidth, _options.DetCanvasHeight);
             _detector.Detect(blank);
             _recognizer.WarmUp();
         }

@@ -2,9 +2,13 @@ namespace PiggyOcr.Core;
 
 public sealed class OcrOptions
 {
-    /// <summary>Upscale short side to this before detection (PP-OCR limit_type=min).</summary>
-    public int DetLimitSideLen { get; set; } = 736;
-    public int DetMaxSide { get; set; } = 2400;
+    /// <summary>
+    /// Detection always runs on one fixed canvas (letterboxed). DirectML recompiles its graph
+    /// per input shape, so a variable-size det input costs ~300ms on every first capture.
+    /// </summary>
+    public int DetCanvasWidth { get; set; } = 1920;
+    public int DetCanvasHeight { get; set; } = 1088;
+    public float DetMaxUpscale { get; set; } = 4f;
     public float DetThreshold { get; set; } = 0.3f;
     public float BoxThreshold { get; set; } = 0.5f;
     public float UnclipRatio { get; set; } = 1.6f;
@@ -12,7 +16,7 @@ public sealed class OcrOptions
 
     public int RecHeight { get; set; } = 48;
     public int RecMaxWidth { get; set; } = 2048;
-    public int RecPadMultiple { get; set; } = 32;
+    public int[] RecWidthBuckets { get; set; } = { 320, 640, 960, 1280, 1600, 2048 };
     public int CropPadding { get; set; } = 4;
 
     public float[] DetMean { get; set; } = { 0.5f, 0.5f, 0.5f };

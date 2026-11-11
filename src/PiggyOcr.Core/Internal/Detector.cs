@@ -19,20 +19,22 @@ internal sealed class Detector
 
     public List<Box> Detect(ImageBuffer image)
     {
-        int minSide = Math.Min(image.Width, image.Height);
-        int maxSide = Math.Max(image.Width, image.Height);
+        int canvasW = _options.DetCanvasWidth;
+        int canvasH = _options.DetCanvasHeight;
 
-        float scale = 1f;
-        if (minSide < _options.DetLimitSideLen)
-            scale = Math.Min(_options.DetLimitSideLen / (float)minSide, 4f);
-        if (maxSide * scale > _options.DetMaxSide)
-            scale = _options.DetMaxSide / (float)maxSide;
+        float scale = Math.Min(canvasW / (float)image.Width, canvasH / (float)image.Height);
+        scale = Math.Min(scale, _options.DetMaxUpscale);
 
-        int dw = RoundUp((int)MathF.Ceiling(image.Width * scale), 32);
-        int dh = RoundUp((int)MathF.Ceiling(image.Height * scale), 32);
+        int scaledW = Math.Max(1, (int)MathF.Round(image.Width * scale));
+        int scaledH = Math.Max(1, (int)MathF.Round(image.Height * scale));
+        int padX = (canvasW - scaledW) / 2;
+        int padY = (canvasH - scaledH) / 2;
 
-        var resized = ImageOps.Resize(image, dw, dh);
-        var tensor = ImageOps.ToTensor(resized, _options.DetMean, _options.DetStd);
+        var resized = ImageOps.Resize(image, scaledW, scaledH);
+        var canvas = new ImageBuffer(canvasW, canvasH);
+        ImageOps.Blit(canvas, resized, padX, padY);
+
+        var tensor = ImageOps.ToTensor(canvas, _options.DetMean, _options.DetStd);
 
         using var results = _session.Run(new[] { NamedOnnxValue.CreateFromTensor(_inputName, tensor) });
         var map = results.First(v => v.Name == _outputName).AsTensor<float>();
@@ -55,20 +57,16 @@ internal sealed class Detector
         }
 
         var boxes = DetPostProcess.Find(probs, pw, ph, _options);
-        float sx = image.Width / (float)pw;
-        float sy = image.Height / (float)ph;
 
         var result = new List<Box>(boxes.Count);
         foreach (var b in boxes)
         {
-            int x = Math.Clamp((int)(b.X * sx), 0, image.Width - 1);
-            int y = Math.Clamp((int)(b.Y * sy), 0, image.Height - 1);
-            int w = Math.Clamp((int)MathF.Ceiling(b.W * sx), 1, image.Width - x);
-            int h = Math.Clamp((int)MathF.Ceiling(b.H * sy), 1, image.Height - y);
+            int x = Math.Clamp((int)((b.X - padX) / scale), 0, image.Width - 1);
+            int y = Math.Clamp((int)((b.Y - padY) / scale), 0, image.Height - 1);
+            int w = Math.Clamp((int)MathF.Ceiling(b.W / scale), 1, image.Width - x);
+            int h = Math.Clamp((int)MathF.Ceiling(b.H / scale), 1, image.Height - y);
             result.Add(new Box(x, y, w, h));
         }
         return result;
     }
-
-    private static int RoundUp(int value, int multiple) => (value + multiple - 1) / multiple * multiple;
 }

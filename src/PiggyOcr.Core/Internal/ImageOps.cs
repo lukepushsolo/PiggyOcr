@@ -72,6 +72,17 @@ internal static class ImageOps
         return tensor;
     }
 
+    public static void Blit(ImageBuffer dst, ImageBuffer src, int x, int y)
+    {
+        for (int row = 0; row < src.Height; row++)
+        {
+            int dy = y + row;
+            if (dy < 0 || dy >= dst.Height || x >= dst.Width) continue;
+            int copyW = Math.Min(src.Width, dst.Width - x);
+            Buffer.BlockCopy(src.Bgra, row * src.Stride, dst.Bgra, dy * dst.Stride + x * 4, copyW * 4);
+        }
+    }
+
     public static ImageBuffer PadRight(ImageBuffer src, int dstW)
     {
         if (dstW <= src.Width) return src;

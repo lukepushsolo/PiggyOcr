@@ -1,6 +1,10 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/PiggyOcr.App/PiggyOcr.App.csproj">
+      <Platform Project="x64" />
+    </Project>
     <Project Path="src/PiggyOcr.Core/PiggyOcr.Core.csproj" />
+    <Project Path="src/PiggyOcr.Platform/PiggyOcr.Platform.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/PiggyOcr.Core.Tests/PiggyOcr.Core.Tests.csproj" />

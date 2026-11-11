@@ -36,9 +36,9 @@ internal sealed class Recognizer
             _options.RecMaxWidth);
 
         var resized = ImageOps.Resize(crop, contentWidth, _options.RecHeight);
-        int paddedWidth = RoundUp(contentWidth, _options.RecPadMultiple);
-        if (paddedWidth != contentWidth)
-            resized = ImageOps.PadRight(resized, paddedWidth);
+        int bucketWidth = ChooseBucket(contentWidth);
+        if (bucketWidth != contentWidth)
+            resized = ImageOps.PadRight(resized, bucketWidth);
 
         var tensor = ImageOps.ToTensor(resized, _options.RecMean, _options.RecStd);
         using var results = _session.Run(new[] { NamedOnnxValue.CreateFromTensor(_inputName, tensor) });
@@ -53,9 +53,19 @@ internal sealed class Recognizer
 
     public void WarmUp()
     {
-        var blank = new ImageBuffer(_options.RecPadMultiple * 4, _options.RecHeight);
-        var tensor = ImageOps.ToTensor(blank, _options.RecMean, _options.RecStd);
-        using var _ = _session.Run(new[] { NamedOnnxValue.CreateFromTensor(_inputName, tensor) });
+        foreach (int width in _options.RecWidthBuckets)
+        {
+            var blank = new ImageBuffer(width, _options.RecHeight);
+            var tensor = ImageOps.ToTensor(blank, _options.RecMean, _options.RecStd);
+            using var _ = _session.Run(new[] { NamedOnnxValue.CreateFromTensor(_inputName, tensor) });
+        }
+    }
+
+    private int ChooseBucket(int contentWidth)
+    {
+        foreach (int bucket in _options.RecWidthBuckets)
+            if (bucket >= contentWidth) return bucket;
+        return _options.RecWidthBuckets[^1];
     }
 
     private static string[] LoadDict(InferenceSession session, string modelDirectory)
@@ -71,5 +81,4 @@ internal sealed class Recognizer
         throw new InvalidOperationException("rec 模型缺少 character 元数据，也未找到 dict.txt");
     }
 
-    private static int RoundUp(int value, int multiple) => (value + multiple - 1) / multiple * multiple;
 }
