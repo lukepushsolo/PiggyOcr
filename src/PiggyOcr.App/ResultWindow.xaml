@@ -14,8 +14,11 @@
 
         <Grid Grid.Row="0">
             <TextBlock Text="识别结果" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
-            <Button x:Name="CopyButton" Content="复制" HorizontalAlignment="Right"
-                    Style="{StaticResource AccentButtonStyle}" Click="OnCopyClick" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <Button x:Name="HistoryButton" Content="历史" />
+                <Button x:Name="CopyButton" Content="复制"
+                        Style="{StaticResource AccentButtonStyle}" Click="OnCopyClick" />
+            </StackPanel>
         </Grid>
 
         <TextBox x:Name="Text" Grid.Row="1"

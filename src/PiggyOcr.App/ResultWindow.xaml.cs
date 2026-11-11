@@ -9,7 +9,7 @@ public sealed partial class ResultWindow : Window
 {
     private readonly string _original;
 
-    public ResultWindow(string text)
+    public ResultWindow(string text, IReadOnlyList<string> history)
     {
         InitializeComponent();
         Title = "PiggyOcr · 识别结果";
@@ -18,7 +18,29 @@ public sealed partial class ResultWindow : Window
         Text.Text = text;
         Count.Text = $"{text.Length} 字";
 
+        BuildHistory(history);
         Activated += OnActivated;
+    }
+
+    private void BuildHistory(IReadOnlyList<string> history)
+    {
+        var flyout = new MenuFlyout();
+        if (history.Count == 0)
+        {
+            flyout.Items.Add(new MenuFlyoutItem { Text = "暂无历史", IsEnabled = false });
+        }
+        else
+        {
+            foreach (string item in history.Take(20))
+            {
+                string label = item.Replace("\r", "").Replace('\n', ' ');
+                if (label.Length > 48) label = label[..48] + "…";
+                var menuItem = new MenuFlyoutItem { Text = label };
+                menuItem.Click += (_, _) => Text.Text = item;
+                flyout.Items.Add(menuItem);
+            }
+        }
+        HistoryButton.Flyout = flyout;
     }
 
     private void OnActivated(object sender, WindowActivatedEventArgs args)

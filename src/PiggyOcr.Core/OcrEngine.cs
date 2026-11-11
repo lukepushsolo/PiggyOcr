@@ -113,9 +113,12 @@ public sealed class OcrEngine : IDisposable
 
     public void Dispose()
     {
-        if (Disposed) return;
-        Disposed = true;
-        _recSession.Dispose();
-        _detSession.Dispose();
+        lock (_gate)
+        {
+            if (Disposed) return;
+            Disposed = true;
+            _recSession.Dispose();
+            _detSession.Dispose();
+        }
     }
 }

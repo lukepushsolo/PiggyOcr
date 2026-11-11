@@ -12,8 +12,8 @@ public sealed class TrayIcon : IDisposable
     private static TrayIcon? _current;
     private static bool _classRegistered;
 
-    private readonly uint _hotkeyModifiers;
-    private readonly uint _hotkeyKey;
+    private uint _hotkeyModifiers;
+    private uint _hotkeyKey;
     private IntPtr _hwnd;
     private NOTIFYICONDATA _iconData;
     private bool _disposed;
@@ -26,6 +26,7 @@ public sealed class TrayIcon : IDisposable
     public event Action? SettingsRequested;
     public event Action? CheckUpdateRequested;
     public event Action? ExitRequested;
+    public event Action? NotificationClicked;
 
     public TrayIcon(uint modifiers = MOD_WIN | MOD_SHIFT | MOD_NOREPEAT, uint key = 'O')
     {
@@ -94,6 +95,8 @@ public sealed class TrayIcon : IDisposable
                     current.CaptureRequested?.Invoke();
                 else if (mouseMessage == WM_RBUTTONUP)
                     current.ShowMenu();
+                else if (mouseMessage == (int)NIN_BALLOONUSERCLICK)
+                    current.NotificationClicked?.Invoke();
                 return IntPtr.Zero;
 
             case WM_DESTROY:
@@ -126,6 +129,33 @@ public sealed class TrayIcon : IDisposable
             case 3: CheckUpdateRequested?.Invoke(); break;
             case 4: ExitRequested?.Invoke(); break;
         }
+    }
+
+    public bool SetHotkey(uint modifiers, uint key)
+    {
+        if (_hwnd == IntPtr.Zero) return false;
+
+        UnregisterHotKey(_hwnd, 1);
+        bool ok = RegisterHotKey(_hwnd, 1, modifiers, key);
+        HotkeyRegistered = ok;
+        HotkeyError = ok ? null : $"RegisterHotKey failed: {Marshal.GetLastWin32Error()}";
+        if (ok)
+        {
+            _hotkeyModifiers = modifiers;
+            _hotkeyKey = key;
+        }
+        return ok;
+    }
+
+    public void ShowNotification(string title, string text)
+    {
+        if (_hwnd == IntPtr.Zero) return;
+        _iconData.uFlags |= NIF_INFO;
+        _iconData.szInfoTitle = title;
+        _iconData.szInfo = text;
+        _iconData.dwInfoFlags = NIIF_INFO;
+        Shell_NotifyIcon(NIM_MODIFY, ref _iconData);
+        _iconData.uFlags &= ~NIF_INFO;
     }
 
     public void Dispose()

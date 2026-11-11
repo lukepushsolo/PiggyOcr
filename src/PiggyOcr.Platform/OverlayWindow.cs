@@ -6,6 +6,14 @@ using static PiggyOcr.Platform.NativeMethods;
 
 namespace PiggyOcr.Platform;
 
+public enum OverlayButton
+{
+    Left,
+    Middle,
+    Right,
+    DoubleClick,
+}
+
 /// <summary>
 /// Full-virtual-screen layered window showing a frozen frame, dimmed outside the selection,
 /// with a magnifier lens. WinUI 3 cannot do per-pixel transparent overlays, so this is Win32.
@@ -38,21 +46,24 @@ public sealed class OverlayWindow : IDisposable
     private IntPtr _oldBitmap;
     private IntPtr _bits;
     private IntPtr _hook;
+    private readonly bool _rightCancels;
     private bool _selecting;
     private bool _closed;
+    private OverlayButton _button;
     private POINT _start;
     private POINT _cursor;
 
-    public event Action<Box>? Selected;
+    public event Action<Box, OverlayButton>? Selected;
     public event Action? Cancelled;
 
-    public OverlayWindow(ImageBuffer frozen, int originX, int originY)
+    public OverlayWindow(ImageBuffer frozen, int originX, int originY, bool rightCancels = true)
     {
         _frozen = frozen;
         _vx = originX;
         _vy = originY;
         _vw = frozen.Width;
         _vh = frozen.Height;
+        _rightCancels = rightCancels;
 
         _dimmed = new byte[frozen.Bgra.Length];
         for (int i = 0; i < _dimmed.Length; i += 4)
@@ -223,39 +234,36 @@ public sealed class OverlayWindow : IDisposable
                 return IntPtr.Zero;
 
             case WM_LBUTTONDOWN:
-                _start = PointFromLParam(lParam);
-                _cursor = _start;
-                _selecting = true;
-                Render();
+                StartSelection(OverlayButton.Left, lParam);
+                return IntPtr.Zero;
+
+            case WM_MBUTTONDOWN:
+                StartSelection(OverlayButton.Middle, lParam);
+                return IntPtr.Zero;
+
+            case WM_RBUTTONDOWN:
+                if (_rightCancels) Cancel();
+                else StartSelection(OverlayButton.Right, lParam);
                 return IntPtr.Zero;
 
             case WM_LBUTTONUP:
-                if (_selecting)
-                {
-                    Box rect = SelectionRect(PointFromLParam(lParam));
-                    _selecting = false;
-                    if (rect.Width >= 4 && rect.Height >= 4)
-                    {
-                        var handler = Selected;
-                        Close();
-                        handler?.Invoke(rect);
-                    }
-                    else
-                    {
-                        Render();
-                    }
-                }
+                FinishSelection(OverlayButton.Left, lParam);
+                return IntPtr.Zero;
+
+            case WM_MBUTTONUP:
+                FinishSelection(OverlayButton.Middle, lParam);
+                return IntPtr.Zero;
+
+            case WM_RBUTTONUP:
+                if (_rightCancels) Cancel();
+                else FinishSelection(OverlayButton.Right, lParam);
                 return IntPtr.Zero;
 
             case WM_LBUTTONDBLCLK:
                 _selecting = false;
                 var dbl = Selected;
                 Close();
-                dbl?.Invoke(new Box(0, 0, _vw, _vh));
-                return IntPtr.Zero;
-
-            case WM_RBUTTONUP:
-                Cancel();
+                dbl?.Invoke(new Box(0, 0, _vw, _vh), OverlayButton.DoubleClick);
                 return IntPtr.Zero;
 
             case WM_CLOSE:
@@ -266,6 +274,33 @@ public sealed class OverlayWindow : IDisposable
                 return IntPtr.Zero;
         }
         return DefWindowProc(_hwnd, msg, wParam, lParam);
+    }
+
+    private void StartSelection(OverlayButton button, IntPtr lParam)
+    {
+        _button = button;
+        _start = PointFromLParam(lParam);
+        _cursor = _start;
+        _selecting = true;
+        Render();
+    }
+
+    private void FinishSelection(OverlayButton button, IntPtr lParam)
+    {
+        if (!_selecting || _button != button) return;
+
+        Box rect = SelectionRect(PointFromLParam(lParam));
+        _selecting = false;
+        if (rect.Width >= 4 && rect.Height >= 4)
+        {
+            var handler = Selected;
+            Close();
+            handler?.Invoke(rect, button);
+        }
+        else
+        {
+            Render();
+        }
     }
 
     private void Cancel()

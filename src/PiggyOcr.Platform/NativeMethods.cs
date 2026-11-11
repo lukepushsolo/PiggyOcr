@@ -30,7 +30,10 @@ internal static class NativeMethods
     public const uint WM_LBUTTONDOWN = 0x0201;
     public const uint WM_LBUTTONUP = 0x0202;
     public const uint WM_LBUTTONDBLCLK = 0x0203;
+    public const uint WM_RBUTTONDOWN = 0x0204;
     public const uint WM_RBUTTONUP = 0x0205;
+    public const uint WM_MBUTTONDOWN = 0x0207;
+    public const uint WM_MBUTTONUP = 0x0208;
     public const uint WM_HOTKEY = 0x0312;
     public const uint WM_APP = 0x8000;
     public const uint WM_NULL = 0x0000;
@@ -48,6 +51,9 @@ internal static class NativeMethods
     public const uint NIF_MESSAGE = 0x00000001;
     public const uint NIF_ICON = 0x00000002;
     public const uint NIF_TIP = 0x00000004;
+    public const uint NIF_INFO = 0x00000010;
+    public const uint NIIF_INFO = 0x00000001;
+    public const uint NIN_BALLOONUSERCLICK = 0x0405;
     public const uint NIM_ADD = 0x00000000;
     public const uint NIM_MODIFY = 0x00000001;
     public const uint NIM_DELETE = 0x00000002;
