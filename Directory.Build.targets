@@ -1,0 +1,18 @@
+<Project>
+  <!--
+    ONNX Runtime's DirectML package pulls DirectML.dll only when referenced directly.
+    Transitive ProjectReferences drop it, and the system copy on Win10 is too old
+    (1.2MB, 2021) -> DML device creation fails with DXGI_ERROR_UNSUPPORTED.
+  -->
+  <ItemGroup>
+    <_DirectMlNative Include="$(NuGetPackageRoot)microsoft.ai.directml/*/bin/x64-win/DirectML.dll" />
+  </ItemGroup>
+
+  <Target Name="CopyDirectMlNative" AfterTargets="Build" Condition="'$(RuntimeIdentifier)' != ''">
+    <Copy SourceFiles="@(_DirectMlNative)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="CopyDirectMlNativeToPublish" AfterTargets="Publish" Condition="'$(PublishDir)' != ''">
+    <Copy SourceFiles="@(_DirectMlNative)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
+  </Target>
+</Project>
