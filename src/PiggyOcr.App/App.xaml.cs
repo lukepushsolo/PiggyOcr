@@ -194,6 +194,7 @@ public partial class App : Application
         bool fullScreen = action == MouseAction.FullScreen;
         bool showEditor = action is MouseAction.Edit or MouseAction.FullScreen;
         bool copy = action == MouseAction.CopyClose || _config.AutoCopy;
+        Log("action", null, $"button={button} action={action} copy={copy} editor={showEditor}");
 
         Box region = fullScreen ? new Box(0, 0, frozen.Width, frozen.Height) : rect;
         var crop = frozen.Crop(region.X, region.Y, region.Width, region.Height);
@@ -223,16 +224,27 @@ public partial class App : Application
 
                 _dispatcher?.TryEnqueue(() =>
                 {
-                    AddHistory(result.Text);
-                    if (copy) CopyText(result.Text);
+                    try
+                    {
+                        AddHistory(result.Text);
+                        if (copy)
+                        {
+                            CopyText(result.Text);
+                            Log("clipboard", null, "ok");
+                        }
 
-                    if (showEditor)
-                    {
-                        ShowResult(result.Text, vx + region.X, vy + region.Y);
+                        if (showEditor)
+                        {
+                            ShowResult(result.Text, vx + region.X, vy + region.Y);
+                        }
+                        else
+                        {
+                            _tray?.ShowNotification("PiggyOcr", "已复制到剪贴板");
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _tray?.ShowNotification("PiggyOcr", "已复制到剪贴板");
+                        Log("post", ex);
                     }
                 });
             }

@@ -1,0 +1,25 @@
+PiggyOcr
+Copyright (C) 2026 lukepushsolo
+
+PiggyOcr is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License version 3 (see LICENSE).
+
+Model files are distributed separately and keep their own license:
+
+  PP-OCRv6 models (det + rec, tiny / small / medium)
+    (c) PaddlePaddle Authors, Apache License 2.0
+    https://github.com/PaddlePaddle/PaddleOCR
+
+  ONNX conversions published by RapidAI/RapidOCR
+    Apache License 2.0
+    https://github.com/RapidAI/RapidOCR
+
+Bundled dependencies:
+
+  ONNX Runtime                 MIT License
+  DirectML                     Microsoft, see the Microsoft license terms
+  Windows App SDK              MIT License
+  .NET                         MIT License
+  Vortice.DXGI (if used)       MIT License
+
+No screenshot or recognized text ever leaves the machine.

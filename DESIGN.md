@@ -73,12 +73,12 @@ PiggyOcr\
 
 发布资产（GitHub Releases）：
 
-| 资产 | 内容 | 体积 |
+| 资产 | 内容 | 体积（zip / 解压） |
 |---|---|---|
-| `PiggyOcr-vX.Y.Z-app.zip` | exe + runtime（.NET/WinAppSDK 自包含 + ORT + VC++） | 约 190–290MB |
-| `PiggyOcr-models-tiny.zip` | tiny det+rec | 6.0MB |
-| `PiggyOcr-models-small.zip` | small det+rec | 29.7MB |
-| `PiggyOcr-models-medium.zip` | medium det+rec | 132.4MB |
+| `PiggyOcr-vX.Y.Z-app.zip` | exe + runtime（.NET/WinAppSDK 自包含 + ORT + VC++） | 90.3MB / 约 235MB |
+| `PiggyOcr-models-tiny.zip` | tiny det+rec | 5.5MB / 6.0MB |
+| `PiggyOcr-models-small.zip` | small det+rec | 25.4MB / 29.7MB |
+| `PiggyOcr-models-medium.zip` | medium det+rec | 100.5MB / 132.4MB |
 
 说明：自包含包的 exe 与运行时版本绑定，**更新整体替换应用包**，模型包不动。
 不使用单文件发布（首次启动要解压，反而慢）。
@@ -334,6 +334,17 @@ sigmoid → 阈值 0.3 → 连通域 → 轮廓 → 最小外接矩形（旋转�
 - 结果窗历史保留 20 条（仅内存），托盘气泡代替自绘 Toast。
 - 日志 1MB × 3 轮转，不含截图与识别文本。
 - 快捷键被占用时气泡提示，可在设置里重录。
+
+### M4 结果（2026-11-12）
+
+- `tools/fetch-models.ps1`：三档模型下载 + SHA256 校验。
+- `tools/package.ps1`：产出 app 包与三个模型包，应用包 **90.3MB**（解压 235MB），
+  模型包 5.5 / 25.4 / 100.5MB。
+- 修复发布版专属 bug：`dotnet publish` 不会复制 WinUI 编译出的 `.xbf` 与 `PiggyOcr.App.pri`，
+  导致发布版第二个窗口在 `InitializeComponent` 崩溃。已在 `Directory.Build.targets` 的 Publish 后补拷贝。
+- 解压 app + tiny 模型包到同一目录，端到端通过（热键、蒙层、DirectML、剪贴板、结果窗）；
+  打包版设置窗口可正常打开。
+- 待办：GitHub 仓库创建被权限策略拦截，尚未推送与发布；自定义图标；干净机器验证。
 
 ---
 

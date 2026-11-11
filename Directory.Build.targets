@@ -15,4 +15,17 @@
   <Target Name="CopyDirectMlNativeToPublish" AfterTargets="Publish" Condition="'$(PublishDir)' != ''">
     <Copy SourceFiles="@(_DirectMlNative)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
   </Target>
+
+  <!--
+    WinUI 3 leaves the compiled XAML (.xbf) and the app PRI out of the publish
+    folder; without them every Window but the first fails at InitializeComponent.
+  -->
+  <Target Name="CopyWinUiXamlResourcesToPublish" AfterTargets="Publish"
+          Condition="'$(UseWinUI)' == 'true' and '$(PublishDir)' != ''">
+    <ItemGroup>
+      <_WinUiXaml Include="$(OutDir)*.xbf" />
+      <_WinUiXaml Include="$(OutDir)$(AssemblyName).pri" Condition="Exists('$(OutDir)$(AssemblyName).pri')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_WinUiXaml)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
+  </Target>
 </Project>
