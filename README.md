@@ -8,8 +8,6 @@ Windows 截图取字工具。按 `Win+Shift+O`，框选屏幕，文字进剪贴�
 - 交互参考 PowerToys Color Picker：冻结帧蒙层、放大镜、按键可配
 - 开机自启、每周检查更新、单实例、深色/浅色跟随系统
 
-设计文档见 [DESIGN.md](DESIGN.md)。
-
 ## 下载与安装
 
 1. 下载 **应用包**：`PiggyOcr-vX.Y.Z-app.zip`（约 76MB，解压后约 196MB，已含运行时）。
@@ -79,7 +77,7 @@ powershell -File tools/fetch-models.ps1
 powershell -File tools/package.ps1 -Version 0.1.0
 ```
 
-产物在 `dist\`。发布前人工测试见 [docs/TESTING.md](docs/TESTING.md)。
+产物在 `dist\`。
 
 ## 许可证
 

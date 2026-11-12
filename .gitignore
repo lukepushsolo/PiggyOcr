@@ -20,3 +20,5 @@ runtime/*.dll
 .idea/
 *.log
 PiggyOcr.json
+# stray downloaded archives (dist/ and models/ are already ignored)
+*.zip
