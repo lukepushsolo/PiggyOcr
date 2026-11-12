@@ -12,7 +12,8 @@ Windows 截图取字工具。按 `Win+Shift+O`，框选屏幕，文字进剪贴�
 
 ## 下载与安装
 
-1. 下载 **应用包**：`PiggyOcr-vX.Y.Z-app.zip`（约 90MB，解压后约 235MB，已含运行时）。
+1. 下载 **应用包**：`PiggyOcr-vX.Y.Z-app.zip`（约 89MB，解压后约 232MB，已含运行时）。
+   后续小版本更新只需下载 `PiggyOcr-vX.Y.Z-update.zip`（不足 1MB），见下方「更新」。
 2. 下载 **一个模型包**（三选一）：
    - `PiggyOcr-models-tiny.zip` 5.5 MB：最快，不支持日文
    - `PiggyOcr-models-small.zip` 25.4 MB：平衡
@@ -21,16 +22,24 @@ Windows 截图取字工具。按 `Win+Shift+O`，框选屏幕，文字进剪贴�
 
 ```
 PiggyOcr\
-  PiggyOcr.exe
+  PiggyOcr.App.exe
   runtime files...
   models\
     tiny\   det.onnx  rec.onnx
 ```
 
-4. 双击 `PiggyOcr.exe`。托盘出现后按 `Win+Shift+O` 即可取字。
+4. 双击 `PiggyOcr.App.exe`。托盘出现后按 `Win+Shift+O` 即可取字。
 
 系统要求：Windows 10 22H2 / Windows 11，x64。不需要管理员权限。
 想换档位，再解压另一个模型包到同一目录，然后在托盘右键 → 设置里切换。
+
+## 更新
+
+1. 从托盘退出 PiggyOcr。
+2. 下载 `PiggyOcr-vX.Y.Z-update.zip`，解压覆盖到原安装目录。
+   `PiggyOcr.json` 和 `models\` 不会被覆盖，无需重新下载模型。
+3. 如果 Release 说明标注「需完整包」（更新了 .NET、Windows App SDK 或推理运行时），
+   直接下载新的 `PiggyOcr-vX.Y.Z-app.zip` 完整包覆盖即可。
 
 ## 使用
 

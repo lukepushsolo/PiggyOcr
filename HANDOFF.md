@@ -10,26 +10,31 @@
 
 ## 当前事实
 
-- 17 个提交，工作区干净。
+- 17 个提交；打包/文档改动尚未提交。
 - 构建：`dotnet build PiggyOcr.slnx -c Release` 成功。
 - 测试：`dotnet test tests/PiggyOcr.Core.Tests -c Release` → 6/6。
-- 发布包（`dist\`，18:40 重新打包）：
+- 发布包（`dist\`，22:16 重新打包）：
 
 | 文件 | 大小 |
 |---|---|
-| `PiggyOcr-v0.1.0-app.zip` | 91MB |
+| `PiggyOcr-v0.1.0-app.zip` | 89.3MB（完整包，首次安装） |
+| `PiggyOcr-v0.1.0-update.zip` | 0.8MB（更新包，仅程序层） |
 | `PiggyOcr-models-tiny.zip` | 5.5MB |
 | `PiggyOcr-models-small.zip` | 25.4MB |
 | `PiggyOcr-models-medium.zip` | 100.5MB |
 
-- 打包版已实测：左键取字、中键复制、右键取消、结果窗置顶、点窗外关闭。
+- 应用包只保留 `zh-CN` / `en-us` 语言资源；文件数 542 → 374。
+- 更新包不含运行时、模型和 `PiggyOcr.json`，覆盖安装不会动用户配置与模型。
+  若某版本升级了 .NET / Windows App SDK / ONNX Runtime，必须发完整包。
+- 打包版已实测：左键取字、中键复制、右键取消、结果窗置顶、点窗外关闭；
+  完整包启动、更新包覆盖后取字均通过。
 - 首次运行引导、设置页快捷键录制已用自动化/截图验证。
 
 ## 下一步（按顺序）
 
 1. **发布授权**：用户明确回复「授权创建公开仓库 `lukepushsolo/PiggyOcr` 并上传 v0.1.0 Release」。
    - `gh repo create lukepushsolo/PiggyOcr --public --source . --remote origin --push`
-   - 创建 `v0.1.0` Release，上传 `dist\` 四个 zip。
+   - 创建 `v0.1.0` Release，上传 `dist\` 五个 zip（app / update / 三档模型）。
    - 未授权前不要推送 / tag / 发 Release。
 2. **人工 QA**：按 `docs/TESTING.md` 过一遍，重点：
    - 干净 Win10（无 .NET / VC++ / CUDA）解压运行；
@@ -74,7 +79,7 @@ tools/e2e-settings.ps1      快捷键录制（UIA）
 tools/e2e-result-window.ps1 结果窗置顶 + 失焦关闭（UIA）
 tools/visual-check.ps1      DPI 感知截图（蒙层/设置/结果）
 tools/fetch-models.ps1      三档模型下载 + SHA256
-tools/package.ps1           应用包 + 三个模型包
+tools/package.ps1           完整包 + 更新包 + 三个模型包
 docs/TESTING.md             发布前人工清单
 ```
 
