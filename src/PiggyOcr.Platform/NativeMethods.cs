@@ -27,6 +27,7 @@ internal static class NativeMethods
     public const uint WM_DESTROY = 0x0002;
     public const uint WM_CLOSE = 0x0010;
     public const uint WM_MOUSEMOVE = 0x0200;
+    public const uint WM_MOUSEWHEEL = 0x020A;
     public const uint WM_LBUTTONDOWN = 0x0201;
     public const uint WM_LBUTTONUP = 0x0202;
     public const uint WM_LBUTTONDBLCLK = 0x0203;

@@ -24,8 +24,9 @@ public sealed class OverlayWindow : IDisposable
     private const uint CS_DBLCLKS = 0x0008;
     private const float DimFactor = 0.55f;
     private const int LensSize = 168;
-    private const int LensZoom = 6;
-    private const int LensSrc = LensSize / LensZoom;
+    private const int MinLensZoom = 2;
+    private const int MaxLensZoom = 12;
+    private int _lensZoom = 6;
 
     private static WndProc? _wndProc;
     private static LowLevelKeyboardProc? _hookProc;
@@ -236,6 +237,10 @@ public sealed class OverlayWindow : IDisposable
                 Render();
                 return IntPtr.Zero;
 
+            case WM_MOUSEWHEEL:
+                ZoomBy(unchecked((short)(wParam.ToInt64() >> 16)));
+                return IntPtr.Zero;
+
             case WM_LBUTTONDOWN:
                 StartSelection(OverlayButton.Left, lParam);
                 return IntPtr.Zero;
@@ -404,6 +409,15 @@ public sealed class OverlayWindow : IDisposable
         g.DrawString(label, font, Brushes.White, x + 6, y + 3);
     }
 
+    private void ZoomBy(int delta)
+    {
+        if (delta == 0) return;
+        int next = Math.Clamp(_lensZoom + (delta > 0 ? 1 : -1), MinLensZoom, MaxLensZoom);
+        if (next == _lensZoom) return;
+        _lensZoom = next;
+        Render();
+    }
+
     private void DrawMagnifier(Graphics g)
     {
         int lx = _cursor.X + 24;
@@ -413,14 +427,15 @@ public sealed class OverlayWindow : IDisposable
         lx = Math.Clamp(lx, 0, Math.Max(0, _vw - LensSize));
         ly = Math.Clamp(ly, 0, Math.Max(0, _vh - LensSize));
 
+        int lensSrc = LensSize / _lensZoom;
         for (int dy = 0; dy < LensSize; dy++)
         {
-            int sy = Math.Clamp(_cursor.Y - LensSrc / 2 + dy / LensZoom, 0, _vh - 1);
+            int sy = Math.Clamp(_cursor.Y - lensSrc / 2 + dy * lensSrc / LensSize, 0, _vh - 1);
             int srcRow = sy * _vw;
             int dstRow = dy * LensSize;
             for (int dx = 0; dx < LensSize; dx++)
             {
-                int sx = Math.Clamp(_cursor.X - LensSrc / 2 + dx / LensZoom, 0, _vw - 1);
+                int sx = Math.Clamp(_cursor.X - lensSrc / 2 + dx * lensSrc / LensSize, 0, _vw - 1);
                 int si = (srcRow + sx) * 4;
                 int di = (dstRow + dx) * 4;
                 _lens[di] = _frozen.Bgra[si];
@@ -430,7 +445,15 @@ public sealed class OverlayWindow : IDisposable
             }
         }
 
-        Marshal.Copy(_lens, 0, IntPtr.Add(_bits, (ly * _vw + lx) * 4), _lens.Length);
+        // _lens is tightly packed; _bits has _vw pixels per row.
+        for (int row = 0; row < LensSize; row++)
+        {
+            Marshal.Copy(
+                _lens,
+                row * LensSize * 4,
+                IntPtr.Add(_bits, ((ly + row) * _vw + lx) * 4),
+                LensSize * 4);
+        }
 
         using var outer = new Pen(Color.FromArgb(255, 20, 20, 20), 4f);
         using var inner = new Pen(Color.White, 2f);
@@ -457,7 +480,7 @@ public sealed class OverlayWindow : IDisposable
 
     private void DrawHint(Graphics g)
     {
-        const string hint = "拖拽框选 · 右键取消 · 双击全屏";
+        const string hint = "滚轮缩放 · 拖拽框选 · 右键取消 · 双击全屏";
         using var font = new Font("Microsoft YaHei UI", 10.5f);
         SizeF size = g.MeasureString(hint, font);
         float x = (_vw - size.Width) / 2f;
