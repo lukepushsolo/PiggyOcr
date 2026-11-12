@@ -281,6 +281,8 @@ public partial class App : Application
         window.AppWindow.MoveAndResize(new RectInt32(x, y, width, height));
         SetWindowIcon(window);
         window.Activate();
+        WindowActivation.ForceForeground(
+            Microsoft.UI.Win32Interop.GetWindowFromWindowId(window.AppWindow.Id));
     }
 
     private void ShowFirstRun()
@@ -368,6 +370,8 @@ public partial class App : Application
         window.AppWindow.Resize(new SizeInt32(440, 200));
         SetWindowIcon(window);
         window.Activate();
+        WindowActivation.ForceForeground(
+            Microsoft.UI.Win32Interop.GetWindowFromWindowId(window.AppWindow.Id));
     }
 
     private static void SetWindowIcon(Window window)

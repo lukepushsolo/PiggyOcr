@@ -7,16 +7,20 @@ namespace PiggyOcr.App;
 
 public sealed partial class ResultWindow : Window
 {
-    private readonly string _original;
+    private bool _modified;
+    private bool _loading = true;
 
     public ResultWindow(string text, IReadOnlyList<string> history)
     {
         InitializeComponent();
         Title = "PiggyOcr · 识别结果";
 
-        _original = text;
         Text.Text = text;
         Count.Text = $"{text.Length} 字";
+        // TextChanged may fire while the initial text is applied; clear the guard
+        // only after that queued notification has been processed.
+        Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread()
+            .TryEnqueue(() => _loading = false);
 
         BuildHistory(history);
         Activated += OnActivated;
@@ -50,7 +54,7 @@ public sealed partial class ResultWindow : Window
             Text.Focus(FocusState.Programmatic);
             Text.SelectionStart = Text.Text.Length;
         }
-        else if (args.WindowActivationState == WindowActivationState.Deactivated && Text.Text == _original)
+        else if (args.WindowActivationState == WindowActivationState.Deactivated && !_modified)
         {
             // policy C: unmodified -> click outside closes; edited -> stay open
             Close();
@@ -59,6 +63,7 @@ public sealed partial class ResultWindow : Window
 
     private void OnTextChanged(object sender, TextChangedEventArgs e)
     {
+        if (!_loading) _modified = true;
         Count.Text = $"{Text.Text.Length} 字";
         CopyButton.Content = "复制";
     }
