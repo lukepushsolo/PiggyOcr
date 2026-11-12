@@ -21,13 +21,13 @@ Windows 截图取字工具。按 `Win+Shift+O`，框选屏幕，文字进剪贴�
 
 ```
 PiggyOcr\
-  PiggyOcr.App.exe
+  PiggyOcr.exe
   runtime files...
   models\
     tiny\   det.onnx  rec.onnx
 ```
 
-4. 双击 `PiggyOcr.App.exe`。托盘出现后按 `Win+Shift+O` 即可取字。
+4. 双击 `PiggyOcr.exe`。托盘出现后按 `Win+Shift+O` 即可取字。
 
 系统要求：Windows 10 22H2 / Windows 11，x64。不需要管理员权限。
 想换档位，再解压另一个模型包到同一目录，然后在托盘右键 → 设置里切换。
@@ -39,6 +39,9 @@ PiggyOcr\
    `PiggyOcr.json` 和 `models\` 不会被覆盖，无需重新下载模型。
 3. 如果 Release 说明标注「需完整包」（更新了 .NET、Windows App SDK 或推理运行时），
    直接下载新的 `PiggyOcr-vX.Y.Z-app.zip` 完整包覆盖即可。
+4. 新版可执行文件已改名为 `PiggyOcr.exe`。从旧版更新后请删除残留的
+   `PiggyOcr.App.exe` / `PiggyOcr.App.dll` / `PiggyOcr.App.pri` 等旧文件，
+   并用 `PiggyOcr.exe` 启动（更新快捷方式）。
 
 ## 使用
 
