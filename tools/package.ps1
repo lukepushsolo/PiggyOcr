@@ -1,6 +1,7 @@
 param(
     [string]$Version = "0.1.0",
-    [string]$OutDir = "dist"
+    [string]$OutDir = "dist",
+    [switch]$WithModels
 )
 
 $ErrorActionPreference = "Stop"
@@ -79,17 +80,21 @@ Write-Host "zipping update ..."
 Compress-Archive -Path (Join-Path $updateStage "*") -DestinationPath $updateZip -CompressionLevel Optimal
 Remove-Item $updateStage -Recurse -Force
 
-foreach ($t in @("tiny", "small", "medium")) {
-    $stage = Join-Path $dist "stage-$t"
-    $modelDir = Join-Path $stage "models\$t"
-    New-Item -ItemType Directory -Force $modelDir | Out-Null
-    Copy-Item (Join-Path $modelsSource "$t\*.onnx") $modelDir
-    Copy-Item (Join-Path $root "NOTICE") (Join-Path $stage "NOTICE.txt")
+if ($WithModels) {
+    foreach ($t in @("tiny", "small", "medium")) {
+        $stage = Join-Path $dist "stage-$t"
+        $modelDir = Join-Path $stage "models\$t"
+        New-Item -ItemType Directory -Force $modelDir | Out-Null
+        Copy-Item (Join-Path $modelsSource "$t\*.onnx") $modelDir
+        Copy-Item (Join-Path $root "NOTICE") (Join-Path $stage "NOTICE.txt")
 
-    $zip = Join-Path $dist "PiggyOcr-models-$t.zip"
-    Write-Host "zipping $t models ..."
-    Compress-Archive -Path (Join-Path $stage "*") -DestinationPath $zip -CompressionLevel Optimal
-    Remove-Item $stage -Recurse -Force
+        $zip = Join-Path $dist "PiggyOcr-models-$t.zip"
+        Write-Host "zipping $t models ..."
+        Compress-Archive -Path (Join-Path $stage "*") -DestinationPath $zip -CompressionLevel Optimal
+        Remove-Item $stage -Recurse -Force
+    }
+} else {
+    Write-Host "skipping model packages (use -WithModels only when the model version changes)"
 }
 
 Write-Host ""

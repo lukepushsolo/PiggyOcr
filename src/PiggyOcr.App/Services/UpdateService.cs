@@ -6,6 +6,10 @@ public static class UpdateService
 {
     public const string ReleasesUrl = "https://github.com/lukepushsolo/PiggyOcr/releases";
 
+    // Models are versioned independently of the app; releases after v0.1.0
+    // link here instead of uploading another ~131MB of model packages.
+    public const string ModelsUrl = "https://github.com/lukepushsolo/PiggyOcr/releases/tag/v0.1.0";
+
     public static async Task<string?> GetLatestTagAsync()
     {
         try

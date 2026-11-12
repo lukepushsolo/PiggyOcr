@@ -12,7 +12,8 @@ Windows 截图取字工具。按 `Win+Shift+O`，框选屏幕，文字进剪贴�
 
 1. 下载 **应用包**：`PiggyOcr-vX.Y.Z-app.zip`（约 76MB，解压后约 196MB，已含运行时）。
    后续小版本更新只需下载 `PiggyOcr-vX.Y.Z-update.zip`（不足 1MB），见下方「更新」。
-2. 下载 **一个模型包**（三选一）：
+2. 下载 **一个模型包**（三选一，与程序版本无关，只需下载一次）：
+   固定下载页：[v0.1.0 模型资产](https://github.com/lukepushsolo/PiggyOcr/releases/tag/v0.1.0)
    - `PiggyOcr-models-tiny.zip` 5.5 MB：最快，不支持日文
    - `PiggyOcr-models-small.zip` 25.4 MB：平衡
    - `PiggyOcr-models-medium.zip` 100.5 MB：最准
@@ -70,12 +71,19 @@ dotnet build PiggyOcr.slnx -c Release
 dotnet run --project tools/OcrCli -- <image.png> <modelsRoot> gpu tiny
 ```
 
-打包（应用包 + 三个模型包）：
+准备本地模型（运行/调试需要）：
 
 ```powershell
 powershell -File tools/fetch-models.ps1
+```
+
+打包（应用包 + 更新包）：
+
+```powershell
 powershell -File tools/package.ps1 -Version 0.1.0
 ```
+
+模型版本变化时才需要重新生成模型包：先运行 `fetch-models.ps1`，再给 `package.ps1` 加 `-WithModels`。
 
 产物在 `dist\`。
 

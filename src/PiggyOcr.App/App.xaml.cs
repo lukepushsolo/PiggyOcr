@@ -322,8 +322,8 @@ public partial class App : Application
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
         var openFolder = new Button { Content = "打开模型目录" };
         openFolder.Click += (_, _) => OpenModelsFolder();
-        var openDownloads = new Button { Content = "打开下载页", Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
-        openDownloads.Click += (_, _) => OpenReleases();
+        var openDownloads = new Button { Content = "打开模型下载页", Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
+        openDownloads.Click += (_, _) => OpenModels();
         var close = new Button { Content = "知道了" };
         close.Click += (_, _) => window.Close();
         buttons.Children.Add(openFolder);
@@ -414,6 +414,18 @@ public partial class App : Application
         catch (Exception ex)
         {
             Log("update", ex);
+        }
+    }
+
+    private void OpenModels()
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(UpdateService.ModelsUrl) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            Log("models", ex);
         }
     }
 
