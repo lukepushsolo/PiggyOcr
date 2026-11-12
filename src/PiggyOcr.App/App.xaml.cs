@@ -525,10 +525,12 @@ public partial class App : Application
     private static string ResolveModelsRoot()
     {
         string local = Path.Combine(AppContext.BaseDirectory, "models");
-        if (Directory.Exists(local)) return local;
+        if (ModelSet.Discover(local).Count > 0) return local;
 
+        // An empty models/ folder (e.g. created by the first-run guide) must not
+        // shadow a usable PIGGYOCR_MODELS override.
         string? env = Environment.GetEnvironmentVariable("PIGGYOCR_MODELS");
-        if (!string.IsNullOrWhiteSpace(env) && Directory.Exists(env)) return env;
+        if (!string.IsNullOrWhiteSpace(env) && ModelSet.Discover(env).Count > 0) return env;
 
         return local;
     }
