@@ -10,7 +10,7 @@
 
 ## 当前事实
 
-- 20 个提交；打包/文档改动均已提交。
+- 打包/文档改动均已提交。
 - 构建：`dotnet build PiggyOcr.slnx -c Release` 成功。
 - 测试：`dotnet test tests/PiggyOcr.Core.Tests -c Release` → 6/6。
 - 发布包（`dist\`，22:42 重新打包）：
