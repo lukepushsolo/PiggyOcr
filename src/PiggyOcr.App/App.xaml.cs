@@ -314,7 +314,7 @@ public partial class App : Application
         });
         panel.Children.Add(new TextBlock
         {
-            Text = "tiny     6.0 MB   最快，不支持日文\nsmall   29.7 MB   平衡\nmedium  132.4 MB  最准",
+            Text = "tiny     5.5 MB   最快，不支持日文\nsmall   25.4 MB   平衡\nmedium 100.5 MB   最准",
             FontFamily = new FontFamily("Consolas"),
             Opacity = 0.85,
         });
