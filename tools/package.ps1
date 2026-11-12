@@ -18,6 +18,7 @@ New-Item -ItemType Directory -Force $appDir | Out-Null
 Write-Host "publishing app ..."
 & dotnet publish (Join-Path $root "src\PiggyOcr.App\PiggyOcr.App.csproj") `
     -c Release -r win-x64 --self-contained true `
+    -p:Version=$Version `
     -p:WindowsAppSDKSelfContained=true -p:WindowsPackageType=None `
     -o $appDir
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
