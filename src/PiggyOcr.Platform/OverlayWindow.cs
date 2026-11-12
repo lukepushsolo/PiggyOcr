@@ -93,6 +93,9 @@ public sealed class OverlayWindow : IDisposable
 
         InstallHook();
         ShowWindow(_hwnd, SW_SHOWNOACTIVATE);
+        // Being topmost is not enough: another always-on-top window may already sit
+        // above us, and SW_SHOWNOACTIVATE does not raise. Push to the top of the band.
+        SetWindowPos(_hwnd, new IntPtr(-1), 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010);
         GetCursorPos(out _cursor);
         _cursor.X -= _vx;
         _cursor.Y -= _vy;
