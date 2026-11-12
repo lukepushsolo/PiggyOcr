@@ -12,7 +12,7 @@ Windows 截图取字工具。按 `Win+Shift+O`，框选屏幕，文字进剪贴�
 
 ## 下载与安装
 
-1. 下载 **应用包**：`PiggyOcr-vX.Y.Z-app.zip`（约 89MB，解压后约 232MB，已含运行时）。
+1. 下载 **应用包**：`PiggyOcr-vX.Y.Z-app.zip`（约 76MB，解压后约 196MB，已含运行时）。
    后续小版本更新只需下载 `PiggyOcr-vX.Y.Z-update.zip`（不足 1MB），见下方「更新」。
 2. 下载 **一个模型包**（三选一）：
    - `PiggyOcr-models-tiny.zip` 5.5 MB：最快，不支持日文

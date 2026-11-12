@@ -10,24 +10,27 @@
 
 ## 当前事实
 
-- 17 个提交；打包/文档改动尚未提交。
+- 20 个提交；打包/文档改动均已提交。
 - 构建：`dotnet build PiggyOcr.slnx -c Release` 成功。
 - 测试：`dotnet test tests/PiggyOcr.Core.Tests -c Release` → 6/6。
-- 发布包（`dist\`，22:16 重新打包）：
+- 发布包（`dist\`，22:42 重新打包）：
 
 | 文件 | 大小 |
 |---|---|
-| `PiggyOcr-v0.1.0-app.zip` | 89.3MB（完整包，首次安装） |
+| `PiggyOcr-v0.1.0-app.zip` | 76.1MB（完整包，首次安装） |
 | `PiggyOcr-v0.1.0-update.zip` | 0.8MB（更新包，仅程序层） |
 | `PiggyOcr-models-tiny.zip` | 5.5MB |
 | `PiggyOcr-models-small.zip` | 25.4MB |
 | `PiggyOcr-models-medium.zip` | 100.5MB |
 
-- 应用包只保留 `zh-CN` / `en-us` 语言资源；文件数 542 → 374。
+- 应用包只保留 `zh-CN` / `en-us` 语言资源，并改引 `Microsoft.WindowsAppSDK.WinUI`
+  单独组件；剔除未使用的 AI/Search/Widgets/ML、DWriteCore、WebView2、Phone、
+  Designer 与调试符号。文件数 542 → 300，解压 235.1 → 196.0MB。
 - 更新包不含运行时、模型和 `PiggyOcr.json`，覆盖安装不会动用户配置与模型。
   若某版本升级了 .NET / Windows App SDK / ONNX Runtime，必须发完整包。
 - 打包版已实测：左键取字、中键复制、右键取消、结果窗置顶、点窗外关闭；
-  完整包启动、更新包覆盖后取字均通过。
+  完整包启动、更新包覆盖后取字均通过；精简组件后取字、设置页、结果窗、
+  首次运行引导与中文渲染均通过。
 - 首次运行引导、设置页快捷键录制已用自动化/截图验证。
 
 ## 下一步（按顺序）

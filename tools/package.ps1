@@ -39,6 +39,26 @@ Get-ChildItem $appDir -Directory |
 $after = (Get-ChildItem $appDir -Recurse -File).Count
 Write-Host "trimmed localization: $before -> $after files"
 
+# Optional Windows App SDK / .NET payload that this app never loads. Keep the
+# list narrow: removing a file that a lazy code path needs only fails later.
+$unusedRuntime = @(
+    "Microsoft.UI.Xaml.Phone.dll",
+    "Microsoft.UI.Designer.dll",
+    "Microsoft.Web.WebView2.Core.dll",
+    "Microsoft.Web.WebView2.Core.Projection.dll",
+    "WebView2Loader.dll",
+    "mscordaccore.dll",
+    "mscordbi.dll",
+    "Microsoft.DiaSymReader.Native.amd64.dll"
+)
+foreach ($name in $unusedRuntime) {
+    Remove-Item (Join-Path $appDir $name) -Force -ErrorAction SilentlyContinue
+}
+Get-ChildItem $appDir -Filter "mscordaccore_amd64_amd64_*.dll" | Remove-Item -Force
+Get-ChildItem $appDir -Directory | ForEach-Object {
+    Get-ChildItem $_.FullName -File -Filter "Microsoft.UI.Xaml.Phone.dll.mui" | Remove-Item -Force
+}
+
 $appZip = Join-Path $dist "PiggyOcr-v$Version-app.zip"
 Write-Host "zipping app ..."
 Compress-Archive -Path (Join-Path $appDir "*") -DestinationPath $appZip -CompressionLevel Optimal
