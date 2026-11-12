@@ -1,3 +1,4 @@
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -42,6 +43,14 @@ public sealed partial class SettingsWindow : Window
             : "已安装：" + string.Join("、", installed.Select(m => m.Tier.ToString().ToLowerInvariant()));
         BackendText.Text = "当前后端：" + app.BackendText;
         VersionText.Text = $"v{App.CurrentVersion.ToString(3)}";
+
+        Activated += (_, _) => BackendText.Text = "当前后端：" + _app.BackendText;
+
+        var timer = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread().CreateTimer();
+        timer.Interval = TimeSpan.FromSeconds(1);
+        timer.Tick += (_, _) => BackendText.Text = "当前后端：" + _app.BackendText;
+        timer.Start();
+        Closed += (_, _) => timer.Stop();
 
         _loading = false;
     }

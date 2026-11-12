@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <ScrollViewer Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel Padding="28" Spacing="22">
+        <StackPanel Padding="24" Spacing="18">
             <TextBlock Text="设置" FontSize="24" FontWeight="SemiBold" />
 
             <StackPanel Spacing="8">

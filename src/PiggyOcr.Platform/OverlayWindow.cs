@@ -340,8 +340,9 @@ public sealed class OverlayWindow : IDisposable
         if (selection.Width > 0 && selection.Height > 0)
             CopyRegionFromFrozen(selection);
 
-        using (Graphics g = Graphics.FromHdc(_memDc))
+        try
         {
+            using Graphics g = Graphics.FromHdc(_memDc);
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
 
@@ -350,6 +351,10 @@ public sealed class OverlayWindow : IDisposable
                 DrawSelection(g, selection);
             DrawMagnifier(g);
             DrawHint(g);
+        }
+        catch (Exception ex)
+        {
+            Trace($"render error: {ex}");
         }
 
         var dst = new POINT { X = _vx, Y = _vy };
@@ -434,13 +439,26 @@ public sealed class OverlayWindow : IDisposable
         g.DrawLine(cross, lx + 4, ly + LensSize / 2, lx + LensSize - 4, ly + LensSize / 2);
     }
 
+    private static void Trace(string message)
+    {
+        try
+        {
+            File.AppendAllText(Path.Combine(AppContext.BaseDirectory, "overlay.log"),
+                $"{DateTime.Now:O} {message}{Environment.NewLine}");
+        }
+        catch
+        {
+            // diagnostics only
+        }
+    }
+
     private void DrawHint(Graphics g)
     {
         const string hint = "拖拽框选 · 右键取消 · 双击全屏";
         using var font = new Font("Microsoft YaHei UI", 10.5f);
         SizeF size = g.MeasureString(hint, font);
         float x = (_vw - size.Width) / 2f;
-        float y = _vh - size.Height - 48;
+        float y = _vh - size.Height - 80;
         using var bg = new SolidBrush(Color.FromArgb(255, 22, 22, 22));
         g.FillRectangle(bg, x - 16, y - 7, size.Width + 32, size.Height + 14);
         using var border = new Pen(Color.FromArgb(255, 70, 70, 70), 1f);

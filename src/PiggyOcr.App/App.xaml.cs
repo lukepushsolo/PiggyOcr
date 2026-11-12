@@ -275,7 +275,7 @@ public partial class App : Application
         };
 
         var area = DisplayArea.GetFromPoint(new PointInt32(screenX, screenY), DisplayAreaFallback.Primary);
-        const int width = 540, height = 380;
+        const int width = 640, height = 460;
         int x = Math.Clamp(screenX, area.WorkArea.X + 8, area.WorkArea.X + area.WorkArea.Width - width - 8);
         int y = Math.Clamp(screenY, area.WorkArea.Y + 8, area.WorkArea.Y + area.WorkArea.Height - height - 8);
         window.AppWindow.MoveAndResize(new RectInt32(x, y, width, height));
@@ -346,9 +346,12 @@ public partial class App : Application
         _settings = new SettingsWindow(this);
         _settings.Closed += (_, _) => _settings = null;
         var area = DisplayArea.GetFromPoint(new PointInt32(0, 0), DisplayAreaFallback.Primary);
-        int x = area.WorkArea.X + (area.WorkArea.Width - 620) / 2;
-        int y = area.WorkArea.Y + (area.WorkArea.Height - 760) / 2;
-        _settings.AppWindow.MoveAndResize(new RectInt32(Math.Max(area.WorkArea.X, x), Math.Max(area.WorkArea.Y, y), 620, 760));
+        const int settingsWidth = 620;
+        int settingsHeight = Math.Min(1220, area.WorkArea.Height - 24);
+        int x = area.WorkArea.X + (area.WorkArea.Width - settingsWidth) / 2;
+        int y = area.WorkArea.Y + (area.WorkArea.Height - settingsHeight) / 2;
+        _settings.AppWindow.MoveAndResize(new RectInt32(
+            Math.Max(area.WorkArea.X, x), Math.Max(area.WorkArea.Y, y), settingsWidth, settingsHeight));
         SetWindowIcon(_settings);
         _settings.Activate();
     }
