@@ -70,7 +70,7 @@ powershell -File tools/fetch-models.ps1
 powershell -File tools/package.ps1 -Version 0.1.0
 ```
 
-产物在 `dist\`。
+产物在 `dist\`。发布前人工测试见 [docs/TESTING.md](docs/TESTING.md)。
 
 ## 许可证
 
