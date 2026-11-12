@@ -279,6 +279,7 @@ public partial class App : Application
         int x = Math.Clamp(screenX, area.WorkArea.X + 8, area.WorkArea.X + area.WorkArea.Width - width - 8);
         int y = Math.Clamp(screenY, area.WorkArea.Y + 8, area.WorkArea.Y + area.WorkArea.Height - height - 8);
         window.AppWindow.MoveAndResize(new RectInt32(x, y, width, height));
+        SetWindowIcon(window);
         window.Activate();
     }
 
@@ -330,6 +331,7 @@ public partial class App : Application
 
         window.Content = panel;
         window.AppWindow.Resize(new SizeInt32(660, 420));
+        SetWindowIcon(window);
         window.Activate();
     }
 
@@ -347,6 +349,7 @@ public partial class App : Application
         int x = area.WorkArea.X + (area.WorkArea.Width - 620) / 2;
         int y = area.WorkArea.Y + (area.WorkArea.Height - 760) / 2;
         _settings.AppWindow.MoveAndResize(new RectInt32(Math.Max(area.WorkArea.X, x), Math.Max(area.WorkArea.Y, y), 620, 760));
+        SetWindowIcon(_settings);
         _settings.Activate();
     }
 
@@ -360,7 +363,21 @@ public partial class App : Application
         panel.Children.Add(button);
         window.Content = panel;
         window.AppWindow.Resize(new SizeInt32(440, 200));
+        SetWindowIcon(window);
         window.Activate();
+    }
+
+    private static void SetWindowIcon(Window window)
+    {
+        try
+        {
+            string path = Path.Combine(AppContext.BaseDirectory, "Assets", "PiggyOcr.ico");
+            if (File.Exists(path)) window.AppWindow.SetIcon(path);
+        }
+        catch
+        {
+            // the icon is cosmetic; never fail a window over it
+        }
     }
 
     private void ShowInfoLater(string message)

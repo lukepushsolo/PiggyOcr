@@ -208,6 +208,9 @@ internal static class NativeMethods
     [DllImport("user32.dll")] public static extern IntPtr SetCursor(IntPtr cursor);
     [DllImport("user32.dll")] public static extern IntPtr LoadCursor(IntPtr instance, IntPtr name);
     [DllImport("user32.dll")] public static extern IntPtr LoadIcon(IntPtr instance, IntPtr name);
+    [DllImport("user32.dll")] public static extern bool DestroyIcon(IntPtr icon);
+    [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+    public static extern uint ExtractIconEx(string file, int index, out IntPtr large, out IntPtr small, uint count);
 
     [DllImport("user32.dll")]
     public static extern bool RegisterHotKey(IntPtr hWnd, int id, uint modifiers, uint vk);

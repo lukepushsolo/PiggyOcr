@@ -75,7 +75,7 @@ PiggyOcr\
 
 | 资产 | 内容 | 体积（zip / 解压） |
 |---|---|---|
-| `PiggyOcr-vX.Y.Z-app.zip` | exe + runtime（.NET/WinAppSDK 自包含 + ORT + VC++） | 90.3MB / 约 235MB |
+| `PiggyOcr-vX.Y.Z-app.zip` | exe + runtime（.NET/WinAppSDK 自包含 + ORT + VC++） | 91.0MB / 约 235MB |
 | `PiggyOcr-models-tiny.zip` | tiny det+rec | 5.5MB / 6.0MB |
 | `PiggyOcr-models-small.zip` | small det+rec | 25.4MB / 29.7MB |
 | `PiggyOcr-models-medium.zip` | medium det+rec | 100.5MB / 132.4MB |
@@ -344,7 +344,10 @@ sigmoid → 阈值 0.3 → 连通域 → 轮廓 → 最小外接矩形（旋转�
   导致发布版第二个窗口在 `InitializeComponent` 崩溃。已在 `Directory.Build.targets` 的 Publish 后补拷贝。
 - 解压 app + tiny 模型包到同一目录，端到端通过（热键、蒙层、DirectML、剪贴板、结果窗）；
   打包版设置窗口可正常打开。
-- 待办：GitHub 仓库创建被权限策略拦截，尚未推送与发布；自定义图标；干净机器验证。
+- 补 VC++ 运行库 app-local（7 个 DLL，约 1.6MB）：自包含 .NET 不含它，干净 Win10 上会启动失败。
+- 自定义小猪图标：内嵌 exe、托盘、结果窗/设置窗/引导窗。
+- GitHub Actions：push/PR 自动 build + test。
+- 待办：GitHub 仓库创建被权限策略拦截，尚未推送与发布；干净机器验证。
 
 ---
 

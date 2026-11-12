@@ -17,6 +17,25 @@
   </Target>
 
   <!--
+    Self-contained .NET does not carry the VC++ runtime. Unpackaged WinUI / ORT
+    still need it, and stock Win10 does not ship it, so deploy app-local.
+  -->
+  <ItemGroup>
+    <_VcRuntimeNative Include="$(SystemRoot)\System32\vcruntime140.dll" />
+    <_VcRuntimeNative Include="$(SystemRoot)\System32\vcruntime140_1.dll" />
+    <_VcRuntimeNative Include="$(SystemRoot)\System32\msvcp140.dll" />
+    <_VcRuntimeNative Include="$(SystemRoot)\System32\msvcp140_1.dll" />
+    <_VcRuntimeNative Include="$(SystemRoot)\System32\msvcp140_2.dll" />
+    <_VcRuntimeNative Include="$(SystemRoot)\System32\concrt140.dll" />
+    <_VcRuntimeNative Include="$(SystemRoot)\System32\vccorlib140.dll" />
+  </ItemGroup>
+
+  <Target Name="CopyVcRuntimeToPublish" AfterTargets="Publish"
+          Condition="'$(PublishDir)' != '' and Exists('$(SystemRoot)\System32\vcruntime140.dll')">
+    <Copy SourceFiles="@(_VcRuntimeNative)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <!--
     WinUI 3 leaves the compiled XAML (.xbf) and the app PRI out of the publish
     folder; without them every Window but the first fails at InitializeComponent.
   -->

@@ -15,6 +15,7 @@ public sealed class TrayIcon : IDisposable
     private uint _hotkeyModifiers;
     private uint _hotkeyKey;
     private IntPtr _hwnd;
+    private IntPtr _icon;
     private NOTIFYICONDATA _iconData;
     private bool _disposed;
 
@@ -41,7 +42,7 @@ public sealed class TrayIcon : IDisposable
         if (_hwnd == IntPtr.Zero)
             throw new InvalidOperationException($"tray window failed: {Marshal.GetLastWin32Error()}");
 
-        IntPtr icon = LoadIcon(IntPtr.Zero, (IntPtr)IDI_APPLICATION);
+        _icon = LoadAppIcon();
         _iconData = new NOTIFYICONDATA
         {
             cbSize = Marshal.SizeOf<NOTIFYICONDATA>(),
@@ -49,7 +50,7 @@ public sealed class TrayIcon : IDisposable
             uID = 1,
             uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP,
             uCallbackMessage = WM_APP + 1,
-            hIcon = icon,
+            hIcon = _icon,
             szTip = "PiggyOcr · 截图取字",
             szInfo = "",
             szInfoTitle = "",
@@ -60,6 +61,26 @@ public sealed class TrayIcon : IDisposable
         HotkeyRegistered = RegisterHotKey(_hwnd, 1, _hotkeyModifiers, _hotkeyKey);
         if (!HotkeyRegistered)
             HotkeyError = $"RegisterHotKey failed: {Marshal.GetLastWin32Error()}";
+    }
+
+    private static IntPtr LoadAppIcon()
+    {
+        try
+        {
+            string? exe = Environment.ProcessPath;
+            if (!string.IsNullOrEmpty(exe)
+                && ExtractIconEx(exe, 0, out IntPtr large, out IntPtr small, 1) > 0)
+            {
+                IntPtr use = small != IntPtr.Zero ? small : large;
+                if (large != IntPtr.Zero && large != use) DestroyIcon(large);
+                if (use != IntPtr.Zero) return use;
+            }
+        }
+        catch
+        {
+            // fall through to the stock icon
+        }
+        return LoadIcon(IntPtr.Zero, (IntPtr)IDI_APPLICATION);
     }
 
     private void RegisterClass()
@@ -170,6 +191,11 @@ public sealed class TrayIcon : IDisposable
             IntPtr hwnd = _hwnd;
             _hwnd = IntPtr.Zero;
             DestroyWindow(hwnd);
+        }
+        if (_icon != IntPtr.Zero)
+        {
+            DestroyIcon(_icon);
+            _icon = IntPtr.Zero;
         }
         if (ReferenceEquals(_current, this)) _current = null;
     }
