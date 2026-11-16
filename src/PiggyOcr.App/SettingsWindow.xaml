@@ -82,6 +82,10 @@
                 </Grid>
                 <TextBlock x:Name="TierHint" FontSize="12" Opacity="0.6" TextWrapping="Wrap" />
                 <TextBlock x:Name="BackendText" FontSize="12" Opacity="0.6" />
+                <ToggleSwitch x:Name="PunctuationSwitch" Header="中文标点校正"
+                              Toggled="OnPunctuationToggled" />
+                <TextBlock FontSize="12" Opacity="0.6" TextWrapping="Wrap"
+                           Text="中文散文中的括号、引号和标点转为全角；代码/英文保持半角。" />
             </StackPanel>
 
             <StackPanel Spacing="8">

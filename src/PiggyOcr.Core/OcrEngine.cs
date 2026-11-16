@@ -60,7 +60,9 @@ public sealed class OcrEngine : IDisposable
                 var line = _recognizer.Recognize(image, box);
                 if (line is not null) lines.Add(line);
             }
-            return TextLayout.Build(lines);
+
+            var result = TextLayout.Build(lines);
+            return _options.NormalizePunctuation ? PunctuationNormalizer.Normalize(result) : result;
         }
     }
 

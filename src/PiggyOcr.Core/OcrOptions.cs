@@ -2,6 +2,9 @@ namespace PiggyOcr.Core;
 
 public sealed class OcrOptions
 {
+    /// <summary>Fix full-width punctuation pairs in Chinese prose; code-like text is left untouched.</summary>
+    public bool NormalizePunctuation { get; set; } = true;
+
     /// <summary>
     /// Detection always runs on one fixed canvas (letterboxed). DirectML recompiles its graph
     /// per input shape, so a variable-size det input costs ~300ms on every first capture.

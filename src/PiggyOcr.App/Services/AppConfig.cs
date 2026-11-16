@@ -20,6 +20,7 @@ public sealed class AppConfig
     public MouseAction DoubleClick { get; set; } = MouseAction.FullScreen;
     public string Tier { get; set; } = "Auto";
     public bool AutoCopy { get; set; } = true;
+    public bool NormalizePunctuation { get; set; } = true;
     public int HistoryLimit { get; set; } = 20;
     public bool AutoStart { get; set; }
     public bool CheckUpdate { get; set; } = true;

@@ -23,6 +23,7 @@ public partial class App : Application
     private DispatcherQueue? _dispatcher;
     private TrayIcon? _tray;
     private OcrEngine? _engine;
+    private readonly OcrOptions _ocrOptions = new();
     private ModelFiles? _model;
     private OverlayWindow? _overlay;
     private ResultWindow? _result;
@@ -57,6 +58,7 @@ public partial class App : Application
 
         _dispatcher = DispatcherQueue.GetForCurrentThread();
         _config = ConfigStore.Load();
+        _ocrOptions.NormalizePunctuation = _config.NormalizePunctuation;
         _modelsRoot = ResolveModelsRoot();
         LogEnabled = _config.WriteLog;
 
@@ -113,7 +115,7 @@ public partial class App : Application
                 return;
             }
 
-            var engine = new OcrEngine(_model, preferGpu: true);
+            var engine = new OcrEngine(_model, preferGpu: true, options: _ocrOptions);
             if (engine.FallbackReason is not null)
                 Log("dml-fallback", new InvalidOperationException(engine.FallbackReason));
             engine.WarmUp();
@@ -451,6 +453,13 @@ public partial class App : Application
     {
         _config.AutoStart = enabled;
         AutoStart.Set(enabled);
+        SaveConfig();
+    }
+
+    public void ApplyPunctuationCorrection(bool enabled)
+    {
+        _config.NormalizePunctuation = enabled;
+        _ocrOptions.NormalizePunctuation = enabled;
         SaveConfig();
     }
 

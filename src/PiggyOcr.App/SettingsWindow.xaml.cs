@@ -29,6 +29,7 @@ public sealed partial class SettingsWindow : Window
         AutoCopySwitch.IsOn = config.AutoCopy;
         AutoStartSwitch.IsOn = config.AutoStart;
         CheckUpdateSwitch.IsOn = config.CheckUpdate;
+        PunctuationSwitch.IsOn = config.NormalizePunctuation;
         TierCombo.SelectedIndex = config.Tier.ToLowerInvariant() switch
         {
             "tiny" => 1,
@@ -145,6 +146,12 @@ public sealed partial class SettingsWindow : Window
     {
         if (_loading) return;
         _app.ApplyAutoStart(AutoStartSwitch.IsOn);
+    }
+
+    private void OnPunctuationToggled(object sender, RoutedEventArgs e)
+    {
+        if (_loading) return;
+        _app.ApplyPunctuationCorrection(PunctuationSwitch.IsOn);
     }
 
     private void OnCheckUpdateToggled(object sender, RoutedEventArgs e)
